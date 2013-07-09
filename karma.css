@@ -1,0 +1,48 @@
+@font-face {
+    font-family: "Varsity";
+    src: url('fonts/varsity_regular.ttf');
+    font-weight:    normal;
+    font-style: normal;
+}
+
+#karma-results .error {
+    color: rgb(189, 0, 0);
+}
+
+#karma-results .success {
+    color: rgb(2, 129, 2);
+}
+
+#status-indicators #karma-status {
+    width: 10px;
+    font-family: 'Varsity';
+    font-size: 14px;
+}
+#karma-status.karma-disabled {
+    
+} 
+#karma-status.running {
+    background: url(images/spinner.gif) 9px 5px no-repeat;
+    color: rgba(0,0,0,0);
+    cursor: auto;
+}
+#karma-status.karma-errors {
+    color: rgb(189, 0, 0);
+    cursor: pointer;
+}
+
+#karma-status.karma-valid {
+    color: rgb(2, 129, 2);
+    cursor: pointer;
+}
+
+/*@-webkit-keyframes blinker {  
+  from { opacity: 1.0; }
+  to { opacity: 0.0; }
+}
+.css3-blink {
+  -webkit-animation-name: blinker;  
+  -webkit-animation-iteration-count: infinite;  
+  -webkit-animation-timing-function: cubic-bezier(1.0,0,0,1.0);
+  -webkit-animation-duration: 0.3s; 
+}		*/

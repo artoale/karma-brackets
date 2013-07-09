@@ -1,0 +1,11 @@
+<table class="table table-striped table-condensed row-highlight">
+    <tbody>
+        {{#reportList}}
+        <tr class="{{status}}">
+<!--            <td class="line" data-character="{{character}}">{{line}}</td>-->
+            <td>{{title}} {{#log}}({{.}}){{/log}}</td>
+<!--            <td>{{evidence}}</td>-->
+        </tr>
+        {{/reportList}}
+    </tbody>
+</table>
