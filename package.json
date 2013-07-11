@@ -1,10 +1,10 @@
 {
-    "name": "artoale.karma",
+    "name": "karma-brackets",
     "title": "Karma Runner",
     "description": "Run spectacular karma test inside brackets",
     "homepage": "https://github.com/artoale/karma-brackets",
     "version": "0.1.0",
-    "author": "Alessandro Artoni <artoale@gmail.com> (http://your.url)",
+    "author": "Alessandro Artoni <artoale@gmail.com> (https://github.com/artoale)",
     "license": "MIT",
     "engines": {
         "brackets": ">=0.26.0"
