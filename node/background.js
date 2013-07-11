@@ -13,5 +13,9 @@ maxerr: 50, node: true */
         'reporters': ['brackets'],
         'colors': false
     };
-    server.start(data);
+    try {
+        server.start(data);
+    } catch (e) {
+        console.error("ERROR IN RUNNER", e);
+    }
 }());
