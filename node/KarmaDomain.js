@@ -7,127 +7,84 @@ maxerr: 50, node: true */
 
     var karmaProcess;
 
-    var timeout = 10000;
+    var io;
 
+    var _domainManager;
+
+
+    function nop() {
+        console.log('Nop called with args', arguments);
+        return;
+    }
+
+
+    var callback = nop;
+
+    
     function once(fn) {
         var called = false;
         return function (arg1, arg2) {
             if (!called) {
-                //console.log('Calling cb');
                 fn(arg1, arg2);
             }
-//            else {
-//                //console.log('Calling nothing');
-//            }
         };
     }
-    var connected;
+
+
+    var currentDir;
+
     /**
      *
      *  @param {funct} Callback function upon connection
      */
     function startServer(cwd, cb) {
-        var callback = once(cb);
-        var io = require('socket.io').listen(5000, {
-                'log level': 1 //warnings and errors only
-            }),
-            fork = require('child_process').fork,
+        cb = once(cb);
+        io = require('socket.io').listen(5000, {
+            'log level': 1 //warnings and errors only
+        });
+        var fork = require('child_process').fork,
             procOpt = {
                 cwd: cwd,
                 silent: true
             },
             karmaOut = '';
-        connected = false;
-        var t = setTimeout(function () {
-            var error;
-            if (!connected) {
-                console.error('No reporters connected in ' + timeout + 'ms. Aborting');
-                error = {
-                    msg: karmaOut.replace(/\[[0-9]+m/g, '')
-                };
-                io.server.close();
-                karmaProcess.kill();
-                callback(error);
-            }
-        }, timeout);
+        currentDir = cwd;
+
 
         io.sockets.on('connection', function (socket) {
-            connected = true;
-            clearTimeout(t);
-            var browsers = {};
-            var specsResults = [];
-            //console.log('Client connected');
-            
-            
             socket.on('runStart', function (brws) {
-//                console.log('run completed', data);
-                brws.forEach(function (browser) {
-                    browsers[browser.id] = {
-                        browserDetail: browser,
-                        specsResults: {}
-                    };
-                });
-                //console.log('Browsers:', browsers);
+                _domainManager.emitEvent("karmaServer", "runStart", [brws]);
             });
-            
             socket.on('runComplete', function (data) {
-                if (!data.results.error) {
-                    io.server.close();
-                }
-                console.log('run Complete with', data);
-                callback(null, {
-                    browsers: browsers,
-                    results: data.results
-                });
+                _domainManager.emitEvent("karmaServer", "runComplete", [data]);
             });
             socket.on('browserError', function (data) {
-                var browserId = data.browser.id;
-                browsers[browserId].error = data.error.replace('\n', '<br>');
+                _domainManager.emitEvent("karmaServer", "browserError", [data]);
             });
             socket.on('specComplete', function (data) {
-                var specId = data.result.id,
-                    browserId = data.browser.id;
-                //console.log('browsers onspec complete:', browsers);
-                //console.log('browserId :', browserId);
-                browsers[browserId].specsResults[specId] = data.result;
+                _domainManager.emitEvent("karmaServer", "specComplete", [data]);
             });
+
+            cb(null, 'connected');
         });
 
 
-        //        console.log('Running karma server with cwd: ', cwd);
         var execPath = require('path').join(__dirname, 'background.js');
         karmaProcess = fork(execPath, [], procOpt);
         karmaProcess.on('error', function (err) {
-            console.error('Error while starting karma: ', err);
+            console.error('Error while starting karma server: ', err);
             io.server.close();
-            clearTimeout(t);
+            cb(err);
             callback(err);
         });
-
-        //        karmaProcess.on('close', function (code) {
-        //            try {
-        //                var error = {
-        //                    exitcode: code,
-        //                    msg: karmaOut.replace(/\[[0-9]+m/g, '') //hack to remove colors code
-        //                };
-        //                console.log('Karma process terminated because of stdio closed. Code: ', code);
-        //                io.server.close();
-        //                clearTimeout(t);
-        //            } catch (e) {
-        //                console.error("[Exception]", e);
-        //            }
-        //            callback(error);
-        //        });
 
 
         karmaProcess.stdout.on('data', function (data) {
             karmaOut += data;
-            //console.log('stdout: ' + data);
         });
         //        
         karmaProcess.stderr.on('data', function (data) {
             karmaOut += data;
-            //console.error('stderr: ' + data);
         });
 
 
@@ -138,23 +95,61 @@ maxerr: 50, node: true */
                     exitcode: code,
                     msg: karmaOut.replace(/\[[0-9]+m/g, '') //hack to remove colors code
                 };
-                //console.log('Karma process terminated with code: ', code);
                 io.server.close();
-                clearTimeout(t);
             } catch (e) {
-                //console.error("[Exception]", e);
+//                console.error("[Exception]", e);
             }
-            callback(error);
+            cb(error);
         });
     }
 
+    function stopServer() {
+        try {
+            io.server.close();
+            karmaProcess.kill();
 
+        } catch (e) {
+            console.error('Exception while terminating karma:', e);
+        }
+    }
+
+    function run(cb) {
+        console.log('run called!');
+        callback = once(cb);
+        var execPath = require('path').join(__dirname, 'runner.js'),
+            fork = require('child_process').fork,
+            procOpt = {
+                cwd: currentDir,
+                silent: true
+            };
+        var runner = fork(execPath, [], procOpt);
+        runner.on('error', function (err) {
+            console.error('Error while starting karma: ', err);
+            callback(err);
+        });
+        runner.stdout.on('data', function (data) {
+            console.log('stdin:', data.toString());
+        });
+        //   
+        runner.on('exit', function () {
+            console.log('karma run terminated with: ', arguments);
+            callback(null, 'run terminated');
+        });
+        runner.stderr.on('data', function (data) {
+            console.error(data.toString());
+            callback({
+                exitcode: 1,
+                msg: data.toString().replace(/\[[0-9]+m/g, '') //hack to remove colors code
+            });
+        });
+    }
 
     /**
      * Initializes the test domain with several test commands.
      * @param {DomainManager} DomainManager The DomainManager for the server
      */
     function init(DomainManager) {
+        _domainManager = DomainManager;
         if (!DomainManager.hasDomain("karmaServer")) {
             DomainManager.registerDomain("karmaServer", {
                 major: 0,
@@ -171,11 +166,54 @@ maxerr: 50, node: true */
                 name: "cwd",
                 type: "string",
                 description: "absolute filesystem path to be used as karma cwd"
-            }], // parameters
-            [{}]
+            }] // parameters
         );
-
-
+        DomainManager.registerCommand(
+            "karmaServer",
+            "stopServer",
+            stopServer,
+            false,
+            "Kill the running karma server"
+        );
+        DomainManager.registerCommand(
+            "karmaServer",
+            "run",
+            run,
+            true,
+            "Exec the testsuite. This function require the server to be already running"
+        );
+        DomainManager.registerEvent(
+            "karmaServer",
+            "runStart",
+            [{
+                name: 'browsers',
+                type: 'Array'
+            }]
+        );
+        DomainManager.registerEvent(
+            "karmaServer",
+            "runComplete",
+            [{
+                name: 'browsers',
+                type: 'Array'
+            }]
+        );
+        DomainManager.registerEvent(
+            "karmaServer",
+            "browserError",
+            [{
+                name: 'browsers',
+                type: 'Array'
+            }]
+        );
+        DomainManager.registerEvent(
+            "karmaServer",
+            "specComplete",
+            [{
+                name: 'browsers',
+                type: 'Array'
+            }]
+        );
     }
     module.exports = {
         init: init

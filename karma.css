@@ -55,6 +55,11 @@
     font-size: 14px;
 }
 #karma-status.karma-disabled {
+    color: rgba(0, 0, 0, 0.3);
+}
+
+#karma-status.karma-enabled {
+    
 }
 #karma-status.running {
     background: url(images/spinner.gif) 9px 5px no-repeat;

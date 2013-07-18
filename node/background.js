@@ -8,7 +8,7 @@ maxerr: 50, node: true */
     var server = require('karma').server;
     //var data = JSON.parse(process.argv[2]);
     var data = {
-        'singleRun': true,
+//        'singleRun': true,
         'configFile': 'karma.conf.js',
         'reporters': ['brackets'],
         'colors': false
@@ -16,6 +16,6 @@ maxerr: 50, node: true */
     try {
         server.start(data);
     } catch (e) {
-        console.error("ERROR IN RUNNER", e);
+        console.error("ERROR WHILE STARTING KARMA SERVER", e);
     }
 }());

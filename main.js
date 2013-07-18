@@ -21,9 +21,15 @@ define(function (require, exports, module) {
         tabHeaderTemplate = require("text!htmlContent/tab-header.html"),
         errorTemplate = require("text!htmlContent/error.html");
 
+
     var $karmaResults;
 
-    var INDICATOR_ID = 'karma-status';
+    var browsers = {};
+
+    var INDICATOR_ID = 'karma-status',
+        KARMA_SERVER_COMMAND_ID = "karma.startserver",
+        KARMA_STOP_COMMAND_ID = "karma.stopserver",
+        KARMA_RUNNER_COMMAND_ID = "karma.run";
     // Helper function that chains a series of promise-returning
     // functions together via their done callbacks.
 
@@ -75,7 +81,6 @@ define(function (require, exports, module) {
         };
 
         $.each(browsers, function (id, browser) {
-            //console.log(JSON.stringify(browser));
             headerObject.browsers.push({
                 id: id,
                 name: browser.browserDetail.name,
@@ -228,19 +233,78 @@ define(function (require, exports, module) {
                 handleError(err);
             });
             memoryPromise.done(function (data) {
-                //console.log("[brackets-karma] karmaServer run completed with: ", data);
-                handleResults(data.browsers, data.results);
+                console.log("[brackets-karma] karmaServer started completed with: ", data);
+                CommandManager.get(KARMA_RUNNER_COMMAND_ID).setEnabled(true);
+                CommandManager.get(KARMA_STOP_COMMAND_ID).setEnabled(true);
+                CommandManager.get(KARMA_SERVER_COMMAND_ID).setEnabled(false);
+                StatusBar.updateIndicator(INDICATOR_ID, true, "karma-enabled", '');
+                //                handleResults(data.browsers, data.results);
             });
             return memoryPromise;
         }
 
+        function run() {
+            var runPromise = nodeConnection.domains.karmaServer.run();
+            CommandManager.get(KARMA_RUNNER_COMMAND_ID).setEnabled(false);
+            runPromise.fail(function (err) {
+                console.error("[brackets-karma] failed to run karmaServer.run", err);
+                handleError(err);
+            });
+            runPromise.done(function (data) {
+                console.log("[brackets-karma] karmaServer.run completed with: ", data);
+                CommandManager.get(KARMA_RUNNER_COMMAND_ID).setEnabled(true);
+//                handleResults(data.browsers, data.results);
+            });
+            return runPromise;
+        }
+
+        (function registerEventsHandler(nodeConnection) {
+            $(nodeConnection).on("karmaServer.runStart", function (event, brws) {
+                StatusBar.updateIndicator(INDICATOR_ID, true, "running", '');
+                browsers = {};
+                brws.forEach(function (browser) {
+                    browsers[browser.id] = {
+                        browserDetail: browser,
+                        specsResults: {}
+                    };
+                });
+            });
+
+            $(nodeConnection).on("karmaServer.browserError", function (event, data) {
+                var browserId = data.browser.id;
+                browsers[browserId].error = data.error.replace('\n', '<br>');
+            });
+
+            $(nodeConnection).on("karmaServer.specComplete", function (event, data) {
+                var specId = data.result.id,
+                    browserId = data.browser.id;
+                browsers[browserId].specsResults[specId] = data.result;
+            });
+
+            $(nodeConnection).on("karmaServer.runComplete", function (event, data) {
+                handleResults(browsers, data.results);
+            });
+        }(nodeConnection));
         // First, register a command - a UI-less object associating an id to a handler
-        var KARMA_COMMAND_ID = "karma.startserver"; // package-style naming to avoid collisions
-        CommandManager.register("Test with karma", KARMA_COMMAND_ID, function () {
+        // package-style naming to avoid collisions
+        CommandManager.register("Start karma server", KARMA_SERVER_COMMAND_ID, function () {
             StatusBar.updateIndicator(INDICATOR_ID, true, "running", '');
             //            showPanel();
             chain(connect, loadKarmaDomain, startServer);
         });
+
+        CommandManager.register("Test with karma", KARMA_RUNNER_COMMAND_ID, function () {
+            StatusBar.updateIndicator(INDICATOR_ID, true, "running", '');
+            run();
+        }).setEnabled(false);
+        
+        CommandManager.register("Stop karma server", KARMA_STOP_COMMAND_ID, function () {
+            StatusBar.updateIndicator(INDICATOR_ID, true, "karma-disabled", '');
+            CommandManager.get(KARMA_SERVER_COMMAND_ID).setEnabled(true);
+            CommandManager.get(KARMA_RUNNER_COMMAND_ID).setEnabled(false);
+            CommandManager.get(KARMA_STOP_COMMAND_ID).setEnabled(false);
+            nodeConnection.domains.karmaServer.stopServer();
+        }).setEnabled(false);
 
         var karmaHtml = Mustache.render(KarmaTemplate, Strings);
         var resultsPanel = PanelManager.createBottomPanel("karma.results", $(KarmaTemplate), 100);
@@ -259,6 +323,7 @@ define(function (require, exports, module) {
         //        $(karmaStatusHtml).insertBefore("#status-language");
         StatusBar.addIndicator(INDICATOR_ID, $("#karma-status"));
         StatusBar.updateIndicator(INDICATOR_ID, true, "karma-disabled", '');
+        
         $('#karma-status').click(function () {
             if (!$(this).hasClass('karma-disabled')) {
                 showPanel();
@@ -266,12 +331,17 @@ define(function (require, exports, module) {
         });
         // Then create a menu item bound to the command
         // The label of the menu item is the name we gave the command (see above)
+        
         var menu = Menus.getMenu(Menus.AppMenuBar.FILE_MENU);
-        menu.addMenuItem(KARMA_COMMAND_ID, "Ctrl-Shift-K");
-        menu.addMenuDivider(Menus.BEFORE, KARMA_COMMAND_ID);
+        
+        menu.addMenuItem(KARMA_SERVER_COMMAND_ID);
+        menu.addMenuItem(KARMA_STOP_COMMAND_ID);
+        menu.addMenuItem(KARMA_RUNNER_COMMAND_ID, "Ctrl-Alt-K");
+        menu.addMenuDivider(Menus.BEFORE, KARMA_SERVER_COMMAND_ID);
 
-        //        showPanel();
-        // Call all the helper functions in order
+
+
+
 
 
     });
