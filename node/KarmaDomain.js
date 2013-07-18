@@ -112,6 +112,9 @@ maxerr: 50, node: true */
             console.error('Exception while terminating karma:', e);
         }
     }
+    
+    process.on('exit', stopServer);
+    process.on('close', stopServer);
 
     function run(cb) {
         console.log('run called!');
