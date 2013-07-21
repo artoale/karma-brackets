@@ -198,7 +198,7 @@ define(function (require, exports, module) {
 
 
 
-    AppInit.htmlReady(function () {
+    AppInit.appReady(function () {
         ExtensionUtils.loadStyleSheet(module, "karma.css");
         // Create a new node connection. Requires the following extension:
         // https://github.com/joelrbrandt/brackets-node-client
