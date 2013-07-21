@@ -16,10 +16,19 @@ This plugin allows to run your test suites with [karma-runner](http://karma-runn
 ##Usage
 
 1. Your project must contain a `karma.conf.js` file
-2. Launch `File > Test with karma` or use the shortcut `cmd+shift+k` (Mac) `ctrl+shift+k` (Win)
+2. First start karma server with `File > Start karma server`
+2. Once the server is running the status bar will shou a black 'K'
+3. You can now execute your tests with `File > launch tests` (`Cmd/Ctrl + Alt + k`)
 3. Enjoy Testing with karma and brackets!
 
-##To-Do
+
+##Settings
+
+You can specify a different karma configuration file, and when to open the results panel (always, when a test fail, never) by going to `File > Karma Settings`
+
+You can also enjoy karma auto-watch feature by simply putting the `autoWatch` variable to `true` in karma config file.
+
+##To-do
 * Live testing, test-on-save
 * Use external karma process (useful for grunt)
 * Port the brackets reporter to the new (unstable) brackets reporter format
@@ -44,4 +53,5 @@ Permission is hereby granted, free of charge, to any person obtaining a copy of 
 
 The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.```
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+```
