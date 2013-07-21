@@ -11,7 +11,7 @@ maxerr: 50, node: true */
 
     var _domainManager;
 
-
+    
     function nop() {
         console.log('Nop called with args', arguments);
         return;
@@ -37,7 +37,7 @@ maxerr: 50, node: true */
      *
      *  @param {funct} Callback function upon connection
      */
-    function startServer(cwd,settings, cb) {
+    function startServer(cwd, settings, cb) {
         cb = once(cb);
         io = require('socket.io').listen(5000, {
             'log level': 1 //warnings and errors only
@@ -169,8 +169,7 @@ maxerr: 50, node: true */
                 name: "cwd",
                 type: "string",
                 description: "absolute filesystem path to be used as karma cwd"
-            },
-            {
+            }, {
                 name: "settings",
                 type: "{configFile: string}",
                 description: "configuration object"
