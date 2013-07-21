@@ -13,32 +13,28 @@
 #karma-results .nav.nav-tabs {
     margin: -4px 0 -6px 10px;
 }
-
-
 #karma-results .nav.nav-tabs > li > a {
-/*    -webkit-border-radius: 0;*/
+    /*    -webkit-border-radius: 0;*/
     cursor: pointer;
     padding-top: 4px;
     padding-bottom: 4px;
     line-height: 18px;
-    color: rgb(220,220,220);
+    color: rgb(220, 220, 220);
     background-color: rgba(0, 0, 0, 0.4);
     box-shadow:inset 0 1px 0 rgba(255, 255, 255, 0.6), 0 -1px 3px rgba(0, 0, 0, 0.12);
 }
 #karma-results .nav.nav-tabs > li:hover > a {
-/*    -webkit-border-radius: 0;*/
+    /*    -webkit-border-radius: 0;*/
     background-color: rgba(0, 0, 0, 0.55);
     border-color:transparent;
 }
-
 #karma-results .nav.nav-tabs > li.active > a {
-/*    -webkit-border-radius: 0;*/
-/*    border-bottom: solid 1px #DFE2E2;*/
+    /*    -webkit-border-radius: 0;*/
+    /*    border-bottom: solid 1px #DFE2E2;*/
     border-color:transparent;
     background-color: rgba(0, 0, 0, 0.7);
     box-shadow:inset 0 1px 0 rgba(255, 255, 255, 0.6), 0 -1px 3px rgba(0, 0, 0, 0.12);
 }
-
 #karma-results .nav.nav-tabs > li > a.error {
     background-color: rgb(211, 122, 122);
 }
@@ -48,7 +44,6 @@
 #karma-results .nav.nav-tabs > li.active > a.error {
     background-color: rgb(149, 0, 0);
 }
-
 #status-indicators #karma-status {
     width: 10px;
     font-family:'Varsity';
@@ -57,9 +52,7 @@
 #karma-status.karma-disabled {
     color: rgba(0, 0, 0, 0.3);
 }
-
 #karma-status.karma-enabled {
-    
 }
 #karma-status.running {
     background: url(images/spinner.gif) 9px 5px no-repeat;
@@ -74,13 +67,9 @@
     color: rgb(2, 129, 2);
     cursor: pointer;
 }
-/*@-webkit-keyframes blinker {  
-  from { opacity: 1.0; }
-  to { opacity: 0.0; }
+
+/*       Settings       */
+ 
+.karma-settings-dialog .title {
+    font-size: 18px;
 }
-.css3-blink {
-  -webkit-animation-name: blinker;  
-  -webkit-animation-iteration-count: infinite;  
-  -webkit-animation-timing-function: cubic-bezier(1.0,0,0,1.0);
-  -webkit-animation-duration: 0.3s; 
-}		*/

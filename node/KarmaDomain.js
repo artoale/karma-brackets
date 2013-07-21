@@ -37,7 +37,7 @@ maxerr: 50, node: true */
      *
      *  @param {funct} Callback function upon connection
      */
-    function startServer(cwd, cb) {
+    function startServer(cwd,settings, cb) {
         cb = once(cb);
         io = require('socket.io').listen(5000, {
             'log level': 1 //warnings and errors only
@@ -70,7 +70,7 @@ maxerr: 50, node: true */
 
 
         var execPath = require('path').join(__dirname, 'background.js');
-        karmaProcess = fork(execPath, [], procOpt);
+        karmaProcess = fork(execPath, [JSON.stringify(settings)], procOpt);
         karmaProcess.on('error', function (err) {
             console.error('Error while starting karma server: ', err);
             io.server.close();
@@ -169,6 +169,11 @@ maxerr: 50, node: true */
                 name: "cwd",
                 type: "string",
                 description: "absolute filesystem path to be used as karma cwd"
+            },
+            {
+                name: "settings",
+                type: "{configFile: string}",
+                description: "configuration object"
             }] // parameters
         );
         DomainManager.registerCommand(

@@ -17,6 +17,7 @@ define(function (require, exports, module) {
         Resizer = brackets.getModule("utils/Resizer"),
         KarmaTemplate = require("text!htmlContent/bottom-panel-tabs.html"),
         StatusBar = brackets.getModule("widgets/StatusBar"),
+        settings = require("lib/settings"),
         ResultsTemplate = require("text!htmlContent/results-table.html"),
         tabHeaderTemplate = require("text!htmlContent/tab-header.html"),
         errorTemplate = require("text!htmlContent/error.html");
@@ -29,7 +30,8 @@ define(function (require, exports, module) {
     var INDICATOR_ID = 'karma-status',
         KARMA_SERVER_COMMAND_ID = "karma.startserver",
         KARMA_STOP_COMMAND_ID = "karma.stopserver",
-        KARMA_RUNNER_COMMAND_ID = "karma.run";
+        KARMA_RUNNER_COMMAND_ID = "karma.run",
+        KARMA_SETTINGS_COMMAND_ID = "karma.settings";
     // Helper function that chains a series of promise-returning
     // functions together via their done callbacks.
 
@@ -150,8 +152,6 @@ define(function (require, exports, module) {
             .append(bodyHtml);
 
         $karmaResults.find("ul.nav > li > a:first").click();
-
-        showPanel();
     }
 
     function handleError(error) {
@@ -164,7 +164,9 @@ define(function (require, exports, module) {
             .append(bodyHtml);
         StatusBar.updateIndicator(INDICATOR_ID, true, "karma-errors", '');
         renderHtml(headerHtml, bodyHtml);
-        showPanel();
+        if (settings.get('openPanel') !== 'never') {
+            showPanel();
+        }
     }
 
     function handleResults(browsers, result) {
@@ -173,7 +175,6 @@ define(function (require, exports, module) {
         $.each(browsers, function (browserId, browser) {
             bodyHtml += generateBrowserTab(browser);
         });
-        console.log('result', result);
         var error = result.failed > 0 || result.error;
 
         if (error) {
@@ -183,6 +184,15 @@ define(function (require, exports, module) {
         }
 
         renderHtml(headerHtml, bodyHtml);
+        if (error) {
+            if (settings.get('openPanel') !== 'never') {
+                showPanel();
+            }
+        } else {
+            if (settings.get('openPanel') === 'always') {
+                showPanel();
+            }
+        }
     }
 
 
@@ -227,7 +237,7 @@ define(function (require, exports, module) {
             var projectRoot = ProjectManager.getProjectRoot().fullPath;
             //console.log(nodeConnection.domains);
             //console.log('Starting karma server at ', projectRoot);
-            var memoryPromise = nodeConnection.domains.karmaServer.startServer(projectRoot);
+            var memoryPromise = nodeConnection.domains.karmaServer.startServer(projectRoot, settings.getAll());
             memoryPromise.fail(function (err) {
                 console.error("[brackets-karma] failed to run karmaServer.startServer", err);
                 handleError(err);
@@ -253,7 +263,7 @@ define(function (require, exports, module) {
             runPromise.done(function (data) {
                 console.log("[brackets-karma] karmaServer.run completed with: ", data);
                 CommandManager.get(KARMA_RUNNER_COMMAND_ID).setEnabled(true);
-//                handleResults(data.browsers, data.results);
+                //                handleResults(data.browsers, data.results);
             });
             return runPromise;
         }
@@ -293,11 +303,15 @@ define(function (require, exports, module) {
             chain(connect, loadKarmaDomain, startServer);
         });
 
-        CommandManager.register("Test with karma", KARMA_RUNNER_COMMAND_ID, function () {
+        CommandManager.register("Launch tests", KARMA_RUNNER_COMMAND_ID, function () {
             StatusBar.updateIndicator(INDICATOR_ID, true, "running", '');
             run();
         }).setEnabled(false);
-        
+
+        CommandManager.register("Karma settings", KARMA_SETTINGS_COMMAND_ID, function () {
+            settings.showDialog();
+        }).setEnabled(true);
+
         CommandManager.register("Stop karma server", KARMA_STOP_COMMAND_ID, function () {
             StatusBar.updateIndicator(INDICATOR_ID, true, "karma-disabled", '');
             CommandManager.get(KARMA_SERVER_COMMAND_ID).setEnabled(true);
@@ -323,20 +337,26 @@ define(function (require, exports, module) {
         //        $(karmaStatusHtml).insertBefore("#status-language");
         StatusBar.addIndicator(INDICATOR_ID, $("#karma-status"));
         StatusBar.updateIndicator(INDICATOR_ID, true, "karma-disabled", '');
-        
+
         $('#karma-status').click(function () {
             if (!$(this).hasClass('karma-disabled')) {
-                showPanel();
+                if (!_visible) {
+                    showPanel();
+                } else {
+                    Resizer.hide($karmaResults);
+                    _visible = false;
+                }
             }
         });
         // Then create a menu item bound to the command
         // The label of the menu item is the name we gave the command (see above)
-        
+
         var menu = Menus.getMenu(Menus.AppMenuBar.FILE_MENU);
-        
+
         menu.addMenuItem(KARMA_SERVER_COMMAND_ID);
         menu.addMenuItem(KARMA_STOP_COMMAND_ID);
         menu.addMenuItem(KARMA_RUNNER_COMMAND_ID, "Ctrl-Alt-K");
+        menu.addMenuItem(KARMA_SETTINGS_COMMAND_ID);
         menu.addMenuDivider(Menus.BEFORE, KARMA_SERVER_COMMAND_ID);
 
 

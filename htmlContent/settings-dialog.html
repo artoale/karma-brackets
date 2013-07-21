@@ -1,0 +1,29 @@
+<div class="karma-settings-dialog modal">
+    <div class="modal-header">
+        <span class="title">Karma brackets extension settings</span>
+    </div>
+    <div class="modal-body no-padding ">
+        <table class="table table-striped">
+            <tr>
+                <td>Configuration File</td>
+                <td>
+                    <input type="text" name="configFile" value="{{configFile}}" />
+                </td>
+            </tr>
+            <tr>
+                <td>Open panel</td>
+                <td>
+                    <select name="openPanel">
+                        {{#openPanel}}<option value="{{name}}" {{#selected}}selected{{/selected}}>{{value}}</option>{{/openPanel}}
+                    </select>
+                    
+                </td>
+            </tr>
+        </table>
+        <div class="span8"></div>
+    </div>
+    <div class="modal-footer">
+        <button class="dialog-button btn" id="karma-settings-save">Save</button>
+        <button class="dialog-button btn primary" data-button-id="close">Close</button>
+    </div>
+</div>
