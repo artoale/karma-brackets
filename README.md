@@ -29,7 +29,7 @@ You can specify a different karma configuration file, and when to open the resul
 You can also enjoy karma auto-watch feature by simply putting the `autoWatch` variable to `true` in karma config file.
 
 ##To-do
-* Live testing, test-on-save
+* <del>Live testing, test-on-save</del>
 * Use external karma process (useful for grunt)
 * Port the brackets reporter to the new (unstable) brackets reporter format
 
