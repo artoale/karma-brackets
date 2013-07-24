@@ -39,7 +39,7 @@ maxerr: 50, node: true */
      */
     function startServer(cwd, settings, cb) {
         cb = once(cb);
-        io = require('socket.io').listen(5000, {
+        io = require('karma/node_modules/socket.io').listen(5000, {
             'log level': 1 //warnings and errors only
         });
         var fork = require('child_process').fork,
