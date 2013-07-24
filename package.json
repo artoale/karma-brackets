@@ -1,9 +1,9 @@
 {
     "name": "karma-brackets",
     "title": "Karma Runner",
-    "description": "Run spectacular karma test inside brackets",
+    "description": "Run test on multiple browser simultaneously with karma-runner inside brackets",
     "homepage": "https://github.com/artoale/karma-brackets",
-    "version": "0.2.0",
+    "version": "0.2.1",
     "author": "Alessandro Artoni <artoale@gmail.com> (https://github.com/artoale)",
     "license": "MIT",
     "engines": {
