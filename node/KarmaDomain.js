@@ -69,38 +69,38 @@ maxerr: 50, node: true */
         });
 
 
-        var execPath = require('path').join(__dirname, 'background.js');
-        karmaProcess = fork(execPath, [JSON.stringify(settings)], procOpt);
-        karmaProcess.on('error', function (err) {
-            console.error('Error while starting karma server: ', err);
-            io.server.close();
-            cb(err);
-            callback(err);
-        });
-
-
-        karmaProcess.stdout.on('data', function (data) {
-            karmaOut += data;
-        });
-        //        
-        karmaProcess.stderr.on('data', function (data) {
-            karmaOut += data;
-        });
-
-
-        karmaProcess.on('exit', function (code) {
-            var error;
-            try {
-                error = {
-                    exitcode: code,
-                    msg: karmaOut.replace(/\[[0-9]+m/g, '') //hack to remove colors code
-                };
-                io.server.close();
-            } catch (e) {
-//                console.error("[Exception]", e);
-            }
-            cb(error);
-        });
+//        var execPath = require('path').join(__dirname, 'background.js');
+//        karmaProcess = fork(execPath, [JSON.stringify(settings)], procOpt);
+//        karmaProcess.on('error', function (err) {
+//            console.error('Error while starting karma server: ', err);
+//            io.server.close();
+//            cb(err);
+//            callback(err);
+//        });
+//
+//
+//        karmaProcess.stdout.on('data', function (data) {
+//            karmaOut += data;
+//        });
+//        //        
+//        karmaProcess.stderr.on('data', function (data) {
+//            karmaOut += data;
+//        });
+//
+//
+//        karmaProcess.on('exit', function (code) {
+//            var error;
+//            try {
+//                error = {
+//                    exitcode: code,
+//                    msg: karmaOut.replace(/\[[0-9]+m/g, '') //hack to remove colors code
+//                };
+//                io.server.close();
+//            } catch (e) {
+////                console.error("[Exception]", e);
+//            }
+//            cb(error);
+//        });
     }
 
     function stopServer() {
