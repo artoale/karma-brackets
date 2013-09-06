@@ -2,8 +2,14 @@
     <div class="modal-header">
         <span class="title">Karma brackets extension settings</span>
     </div>
-    <div class="modal-body no-padding ">
+    <div class="modal-body no-padding ">This plugin requires you to have karma runner installed. Please specify the location of the 'karma.js' executable - leave it blank if you want to start karma server manually
         <table class="table table-striped">
+            <tr>
+                <td>Karma Executable</td>
+                <td>
+                    <input type="text" name="executable" value="{{executable}}" />
+                </td>
+            </tr>
             <tr>
                 <td>Configuration File</td>
                 <td>
@@ -13,10 +19,8 @@
             <tr>
                 <td>Open panel</td>
                 <td>
-                    <select name="openPanel">
-                        {{#openPanel}}<option value="{{name}}" {{#selected}}selected{{/selected}}>{{value}}</option>{{/openPanel}}
-                    </select>
-                    
+                    <select name="openPanel">{{#openPanel}}
+                        <option value="{{name}}" {{#selected}}selected{{/selected}}>{{value}}</option>{{/openPanel}}</select>
                 </td>
             </tr>
         </table>
