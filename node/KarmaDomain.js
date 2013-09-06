@@ -19,7 +19,7 @@ maxerr: 50, node: true */
 
 
     var callback = nop;
-
+    var config = {};
     
     function once(fn) {
         var called = false;
@@ -39,7 +39,8 @@ maxerr: 50, node: true */
      */
     function startServer(cwd, settings, cb) {
         cb = once(cb);
-        io = require('karma/node_modules/socket.io').listen(5000, {
+        config = settings;
+        io = require('socket.io').listen(5000, {
             'log level': 1 //warnings and errors only
         });
         var fork = require('child_process').fork,
@@ -69,38 +70,38 @@ maxerr: 50, node: true */
         });
 
 
-//        var execPath = require('path').join(__dirname, 'background.js');
-//        karmaProcess = fork(execPath, [JSON.stringify(settings)], procOpt);
-//        karmaProcess.on('error', function (err) {
-//            console.error('Error while starting karma server: ', err);
-//            io.server.close();
-//            cb(err);
-//            callback(err);
-//        });
-//
-//
-//        karmaProcess.stdout.on('data', function (data) {
-//            karmaOut += data;
-//        });
-//        //        
-//        karmaProcess.stderr.on('data', function (data) {
-//            karmaOut += data;
-//        });
-//
-//
-//        karmaProcess.on('exit', function (code) {
-//            var error;
-//            try {
-//                error = {
-//                    exitcode: code,
-//                    msg: karmaOut.replace(/\[[0-9]+m/g, '') //hack to remove colors code
-//                };
-//                io.server.close();
-//            } catch (e) {
-////                console.error("[Exception]", e);
-//            }
-//            cb(error);
-//        });
+        var execPath = require('path').join(settings.executable);
+        karmaProcess = fork(execPath, ['start', settings.configFile, '--no-single-run'], procOpt);
+        karmaProcess.on('error', function (err) {
+            console.error('Error while starting karma server: ', err);
+            io.server.close();
+            cb(err);
+            callback(err);
+        });
+
+
+        karmaProcess.stdout.on('data', function (data) {
+            karmaOut += data;
+        });
+        //        
+        karmaProcess.stderr.on('data', function (data) {
+            karmaOut += data;
+        });
+
+
+        karmaProcess.on('exit', function (code) {
+            var error;
+            try {
+                error = {
+                    exitcode: code,
+                    msg: karmaOut.replace(/\[[0-9]+m/g, '') //hack to remove colors code
+                };
+                io.server.close();
+            } catch (e) {
+//                console.error("[Exception]", e);
+            }
+            cb(error);
+        });
     }
 
     function stopServer() {
@@ -119,15 +120,15 @@ maxerr: 50, node: true */
     function run(cb) {
         console.log('run called!');
         callback = once(cb);
-        var execPath = require('path').join(__dirname, 'runner.js'),
+        var execPath = require('path').join(config.executable),
             fork = require('child_process').fork,
             procOpt = {
                 cwd: currentDir,
                 silent: true
             };
-        var runner = fork(execPath, [], procOpt);
+        var runner = fork(execPath, ['run', config.configFile, '--no-colors'], procOpt);
         runner.on('error', function (err) {
-            console.error('Error while starting karma: ', err);
+            console.error('Error while running tests with karma: ', err);
             callback(err);
         });
         runner.stdout.on('data', function (data) {
