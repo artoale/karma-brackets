@@ -333,7 +333,7 @@ define(function (require, exports, module) {
         });
 
         var karmaStatusHtml = Mustache.render('<div id="karma-status">K</div>', Strings);
-        $(karmaStatusHtml).insertBefore("#jslint-status");
+        $(karmaStatusHtml).insertBefore("#status-inspection");
         //        $(karmaStatusHtml).insertBefore("#status-language");
         StatusBar.addIndicator(INDICATOR_ID, $("#karma-status"));
         StatusBar.updateIndicator(INDICATOR_ID, true, "karma-disabled", '');
