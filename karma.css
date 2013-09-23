@@ -4,6 +4,10 @@
     font-weight: normal;
     font-style: normal;
 }
+#karma-results {
+    -webkit-user-select: text;
+    user-select:text;
+}
 #karma-results .error {
     color: rgb(189, 0, 0);
 }
