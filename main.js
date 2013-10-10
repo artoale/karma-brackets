@@ -286,7 +286,7 @@ define(function (require, exports, module) {
             });
 
             $(nodeConnection).on("karmaServer.specComplete", function (event, data) {
-                var specId = data.result.id,
+                var specId = data.result.id || data.result.suite.join("") + data.result.description,
                     browserId = data.browser.id;
                 browsers[browserId].specsResults[specId] = data.result;
             });
