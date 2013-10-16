@@ -56,6 +56,14 @@ You can specify a different karma executable, configuration file, and when to op
 
 You can also enjoy karma auto-watch feature by simply putting the `autoWatch` variable to `true` in karma config file.
 
+
+##Troubleshooting
+
+If the icon in the status bar keep spinning while karma started correctly (browsers opened and with green bar) check
+if, for some reason, you have a local version of karma installed in `node_modules` (e.g, if you're using generator-angular
+for Yeoman that's the case). Even  if you run the 'global' karma, plugins will be searched within the local installation. 
+To fix it simply run `npm install --save-dev karma-brackets` to install the reporter locally and add it to your package.json
+
 ##To-do
 * <del>Live testing, test-on-save</del>
 * <del>Port the brackets reporter to the new (unstable) brackets reporter format</del>
