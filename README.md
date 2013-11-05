@@ -68,6 +68,7 @@ To fix it simply run `npm install --save-dev karma-brackets` to install the repo
 * <del>Live testing, test-on-save</del>
 * <del>Port the brackets reporter to the new (unstable) brackets reporter format</del>
 * on error - go to line (needs karma modification)
+
 ##Contibution
 
 Currently, this plugin is tested on Mac OSX 10.8. I don't have full-time access to windows machines, if you can help me
