@@ -7,7 +7,7 @@ maxerr: 50, node: true */
 
     var karmaProcess;
 
-    var io;
+    var socket;
 
     var _domainManager;
 
@@ -40,9 +40,10 @@ maxerr: 50, node: true */
     function startServer(cwd, settings, cb) {
         cb = once(cb);
         config = settings;
-        io = require('socket.io').listen(5000, {
-            'log level': 1 //warnings and errors only
-        });
+        socket = require('socket.io-client').connect('http://localhost:5000');
+//        .listen(5000, {
+//            'log level': 1 //warnings and errors only
+//        });
         var fork = require('child_process').fork,
             procOpt = {
                 cwd: cwd,
@@ -51,8 +52,8 @@ maxerr: 50, node: true */
             karmaOut = '';
         currentDir = cwd;
 
-
-        io.sockets.on('connection', function (socket) {
+        
+        socket.on('connection', function () {
             socket.on('runStart', function (brws) {
                 _domainManager.emitEvent("karmaServer", "runStart", [brws]);
             });
@@ -74,7 +75,8 @@ maxerr: 50, node: true */
         karmaProcess = fork(execPath, ['start', settings.configFile, '--no-single-run'], procOpt);
         karmaProcess.on('error', function (err) {
             console.error('Error while starting karma server: ', err);
-            io.server.close();
+//            io.server.close();
+            socket.disconnect();
             cb(err);
             callback(err);
         });
@@ -96,7 +98,8 @@ maxerr: 50, node: true */
                     exitcode: code,
                     msg: karmaOut.replace(/\[[0-9]+m/g, '') //hack to remove colors code
                 };
-                io.server.close();
+//                io.server.close();
+                socket.disconnect();
             } catch (e) {
 //                console.error("[Exception]", e);
             }
@@ -106,7 +109,8 @@ maxerr: 50, node: true */
 
     function stopServer() {
         try {
-            io.server.close();
+//            io.server.close();
+            socket.disconnect();
             karmaProcess.kill();
 
         } catch (e) {
