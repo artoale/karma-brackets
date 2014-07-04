@@ -3,10 +3,10 @@
     "title": "Karma Runner",
     "description": "Run test on multiple browser simultaneously with karma-runner inside brackets",
     "homepage": "https://github.com/artoale/karma-brackets",
-    "version": "0.4.3",
+    "version": "0.5.0",
     "author": "Alessandro Artoni <artoale@gmail.com> (https://github.com/artoale)",
     "license": "MIT",
     "engines": {
-        "brackets": ">=0.31.0"
+        "brackets": ">=0.41.0"
     }
 }

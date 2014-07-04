@@ -77,3 +77,7 @@
 .karma-settings-dialog .title {
     font-size: 18px;
 }
+
+#karma-error p {
+    margin: 0 10px;
+}

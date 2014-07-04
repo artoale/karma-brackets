@@ -8,21 +8,28 @@ This plugin allows to run your test suites with [karma-runner](http://karma-runn
 
 ##Installation 
 
-1. First you need karma and karma-brackets installed globally: `npm install -g karma karma-brackets`
+1. Make sure you have `karma-cli` installed globally: `npm install -g karma-cli`
+1. Then install karma-brackets (and karma) and add them to your project dependencies: `npm install karma-brackets --save-dev`
 1. Open Brackets > File > Extension Manager (or click on the icon on the sidebar)
 2. Select the "Available" tab
 3. Search for "karma" and press install
 4. Restart brackets
 
-##Usage
+##Standalone Usage
 
 1. Add 'brackets' to the list of reporters in `karma.conf.js`
 2. Open the configuration and (if needed) update the path to your karma executable
 2. Start karma server with `File > Start karma server`
 2. Once the server is running the status bar will show a black 'K'
 3. You can now execute your tests with `File > launch tests` (`Cmd/Ctrl + Alt + k`)
-4. **Bonus:** If you enable auto-watch in the config file, you won't need the previous step :)
+4. **Bonus:** If you enable auto-watch in `karma.conf.js` , you won't need the previous step :)
 3. Enjoy Testing with karma and brackets!
+
+##Using an external karma server (e.g. with grunt)
+
+1. Again, make sure karma.conf.js has 'brackets' in the list of reporters
+2. Connect to karma with `File  > Connect to karma server`
+
 
 ##Example config file
 This is how your config file should look like in order to use karma within brackets
@@ -52,21 +59,19 @@ module.exports = function (config) {
 ```
 ##Settings
 
-You can specify a different karma executable, configuration file, and when to open the results panel (always, when a test fail or never) by going to `File > Karma Settings`
+You can specify a different karma executable, configuration file, and when to open the results panel (always, when a test fails or never) by going to `File > Karma Settings`
 
 You can also enjoy karma auto-watch feature by simply putting the `autoWatch` variable to `true` in karma config file.
 
 
 ##Troubleshooting
 
-If the icon in the status bar keep spinning while karma started correctly (browsers opened and with green bar) check
-if, for some reason, you have a local version of karma installed in `node_modules` (e.g, if you're using generator-angular
-for Yeoman that's the case). Even  if you run the 'global' karma, plugins will be searched within the local installation. 
-To fix it simply run `npm install --save-dev karma-brackets` to install the reporter locally and add it to your package.json
+With the latest version of this plugin, error reported should be cleaner and easier to understand. If you have any problem, feel free to open an issue on github.
 
 ##To-do
 * <del>Live testing, test-on-save</del>
 * <del>Port the brackets reporter to the new (unstable) brackets reporter format</del>
+* <del>Make the extension work with external karma server</del>
 * on error - go to line (needs karma modification)
 
 ##Contibution
@@ -79,7 +84,7 @@ If you find a bug, please, open an issue on github (or, if you have time, send a
 
 <del>Note that this plugin use a slightly modified version of karma.</del>
 
-For any information, suggestion or if you just want to have a beer: <artoale@gmail.com>
+For any information, suggestion or if you happen to be in London and just want to have a beer: <artoale@gmail.com>
 
 ###Licence
 
