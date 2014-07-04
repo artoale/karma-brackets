@@ -106,24 +106,12 @@ maxerr: 50, node: true */
                 silent: true
             };
         var runner = fork(execPath, ["run", config.configFile, "--no-colors"], procOpt);
+
         runner.on("error", function (err) {
-            console.error("Error while running tests with karma: ", err);
             callback(err);
         });
-        // runner.stdout.on("data", function (data) {
-        //     // console.log("stdin:", data.toString());
-        // });
-        //   
         runner.on("exit", function () {
-            console.log("karma run terminated with: ", arguments);
             callback(null, "run terminated");
-        });
-        runner.stderr.on("data", function (data) {
-            console.error(data.toString());
-            callback({
-                exitcode: 1,
-                msg: data.toString().replace(/\[[0-9]+m/g, "") //hack to remove colors code
-            });
         });
     }
 
