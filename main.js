@@ -79,6 +79,13 @@ define(function (require, exports, module) {
             _visible = true;
         }
     }
+	
+    function hidePanel() {
+        if (_visible) {
+            Resizer.hide($karmaResults);
+            _visible = false;
+        }
+    }
 
     function generateTabHeader(browsers) {
         var headerObject = {
@@ -195,6 +202,8 @@ define(function (require, exports, module) {
         } else {
             if (settings.get("openPanel") === "always") {
                 showPanel();
+            } else if (settings.get("openPanel") !== "never") {
+                hidePanel();
             }
         }
     }
@@ -349,8 +358,7 @@ define(function (require, exports, module) {
         PanelManager.createBottomPanel("karma.results", $(KarmaTemplate), 100);
         $karmaResults = $("#karma-results");
         $("#karma-results .close").click(function () {
-            Resizer.hide($karmaResults);
-            _visible = false;
+            hidePanel();
         });
 
         $karmaResults.find("ul.nav > li > a").click(function () {
